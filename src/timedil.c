@@ -29,7 +29,7 @@ double fac_to_kmh(double fac)
 }
 
 /*
- * Calculate time dilation percieved by observer A
+ * Calculate time dilation (in years) percieved by observer A
 */
 
 double time_dilation_A(double fac, double time_obs_B)
@@ -41,7 +41,7 @@ double time_dilation_A(double fac, double time_obs_B)
 }
 
 /* 
- * Calculate time dilation percieved by observer B (traveling at )
+ * Calculate time dilation (in years) percieved by observer B (traveling at )
 */
 
 double time_dilation_B(double fac, double time_obs_A)
