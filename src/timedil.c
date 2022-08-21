@@ -51,3 +51,14 @@ double time_dilation_B(double fac, double time_obs_A)
 
 	return time_obs_B;
 }
+
+/*
+ * Calcualte travel duration (as percieved by observer A) 
+ * based on distance in light years and velocity (factor)
+ *
+*/
+
+double travel_duration_A(double dist, double fac)
+{
+	return dist / fac;
+}

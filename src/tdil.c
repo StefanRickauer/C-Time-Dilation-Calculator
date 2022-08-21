@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	}
 	printf("Running tests\n\n");
 	
-	double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95;
+	double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
 
 	double test1 = kmh_to_pct(v_in_kmh);
 
@@ -51,6 +51,14 @@ int main(int argc, char **argv)
 	if(test5 - t_zero > 0.00001) 
 	{
 		fprintf(stderr, "Error in function \"time_dilation_B\", expected %lf and got %lf\n", t_zero, test5);
+		errors++;
+	}
+
+	double test6 = travel_duration_A(distance, v_in_fac);
+
+	if(test6 - 4.21052 > 0.00001)
+	{
+		fprintf(stderr, "Error in function \"travel duration\", exected 4.210526316 and got %lf\n", test6);
 		errors++;
 	}
 

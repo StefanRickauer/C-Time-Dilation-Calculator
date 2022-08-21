@@ -14,5 +14,6 @@ double pct_to_fac(double );
 double fac_to_kmh(double );
 double time_dilation_A(double , double );
 double time_dilation_B(double , double );
+double travel_duration_A(double, double);
 
 #endif
