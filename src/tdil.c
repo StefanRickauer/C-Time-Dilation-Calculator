@@ -1,68 +1,80 @@
 #include <stdio.h>
+#include <getopt.h>
 #include "timedil.h"
+
+static const struct option long_options[] = 
+{
+	{ "kmh", 	required_argument, 0, 'k' },
+	{ "percent", 	required_argument, 0, 'p' },
+	{ "factor", 	required_argument, 0, 'f' },
+	{ "years", 	required_argument, 0, 'y' },
+	{ "distance", 	required_argument, 0, 'd' },
+	{ "earth", 	no_argument, 0, 'e' },
+	{ "trek", 	no_argument, 0, 't' },
+	{ "help", 	no_argument, 0, 'h' }
+};
 
 int main(int argc, char **argv) 
 {
-	if(argc < 2)
+	/*
+	if(argc < 3)
 	{
-		fprintf(stderr, "[! TEST CASE] Run program with ./bin/tdil <any input>\n");
+		fprintf(stderr, "Usage:\n\t./tdil [ -k | -p | -f ] <velocity> -y <time elapsed> [ -e | -t ]\n"
+				"\t./tdil -d <distance travelled in light years> [ -k | -p | -f ] <velocity>\n");
 		return 1;
 	}
-	printf("Running tests\n\n");
+	*/
+	int c;
+	int digit_optind = 0;	
 	
-	double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
+	while(1) 
+	{
+		int this_option_optind = optind ? optind : 1;
+		int option_index = 0;
 
-	double test1 = kmh_to_pct(v_in_kmh);
+		c = getopt_long(argc, argv, "k:p:f:d:y:eth", long_options, &option_index);
+		
+		if(c == -1)
+			break;
 
-	int errors = 0;
+		switch(c) 
+		{
+			case 'k':
+				printf("[TEST] option k with argument: %s\n", optarg);
+				break;
+			case 'p':
+				printf("[TEST] option p with argument: %s\n", optarg);
+				break;
+			case 'f':
+				printf("[TEST] option f with argument: %s\n", optarg);
+				break;
+			case 'y':
+				printf("[TEST] option y with argument: %s\n", optarg);	
+				break;
+			case 'd':
+				printf("[TEST] option d with argument: %s\n", optarg);
+				break;
+			case 'e':
+				printf("[TEST] option e\n");
+				break;
+			case 't':
+				printf("[TEST] option t\n");
+				break;
+			case 'h':
+				printf("[TEST] option h\n");
+				break;
+			case '?':
+				if(optopt == 'k')	printf("-k: missing argument\n");
+				if(optopt == 'p')	printf("-p: missing argument\n");
+				if(optopt == 'f')	printf("-f: missing argument\n");
+				if(optopt == 'y')	printf("-y: missing argument\n");
+				if(optopt == 'd')	printf("-d: missing argumetn\n");
+				break;
+		}
+	}
+	//double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
+
 	
-	if(test1 - v_in_pct > 0.00001) 
-	{
-		fprintf(stderr, "Error in function \"kmh_to_pct\", expected %lf and got %lf\n", v_in_pct, test1);
-		errors++;
-	}
-
-	double test2 = pct_to_fac(v_in_pct);
-
-	if(test2 / 100 - v_in_fac > 0.00001)
-	{
-		fprintf(stderr, "Error in function \"pct_to_fac\", expected %lf and got %lf\n", v_in_fac, test2);
-		errors++;
-	}
-
-	double test3 = fac_to_kmh(v_in_fac);
-	
-	if(test3 - v_in_kmh > 0.00001)
-	{
-		fprintf(stderr, "Error in function \"fac_to_kmh\", expected %lf and got %lf\n", v_in_kmh, test3);
-		errors++;
-	}
-
-	double test4 = time_dilation_A(v_in_fac, t_zero);
-
-	if(test4 - t > 0.05)
-	{
-		fprintf(stderr, "Error in function \"time_dilation_A\", expected %lf and got %lf\n", t, test4);
-		errors++;
-	}
-
-	double test5 = time_dilation_B(v_in_fac, t);
-
-	if(test5 - t_zero > 0.00001) 
-	{
-		fprintf(stderr, "Error in function \"time_dilation_B\", expected %lf and got %lf\n", t_zero, test5);
-		errors++;
-	}
-
-	double test6 = travel_duration_A(distance, v_in_fac);
-
-	if(test6 - 4.21052 > 0.00001)
-	{
-		fprintf(stderr, "Error in function \"travel duration\", exected 4.210526316 and got %lf\n", test6);
-		errors++;
-	}
-
-	printf("Errors in total: %d\n", errors);
 
 	return 0;
 }
