@@ -15,16 +15,33 @@ static const struct option long_options[] =
 	{ 0, 0, 0, 0 }	
 };
 
+char *help_text = "Usage:\n\t./tdil [ -k | -p | -f ] <velocity> -y <time elapsed> [ -e | -t ]\n"
+				"\t./tdil [ --kmh | --percent | --factor ] <velocity> --years <time elapsed> [ --earth | --trek ]\n\n"
+				"\t./tdil [ -d ] <distance travelled in light years> [ -k | -p | -f ] <velocity>\n"
+				"\t./tdil [ --distance ] <distance travelled in light years> [ --kmh | --percent | --factor ] <velocity>\n"
+				"\n\n\t\t-k, --kmh      velocity in kilometers per hour, e.g. 100000000\n"
+				"\t\t-p, --percent  velocity in percent of speed of light, e.g. 90\n"
+				"\t\t-f, --factor   velocity as factor to be multiplied with speed of light, "
+										"e.g. 0.9 (= 90 percent)\n"
+				"\t\t-y, --years    time elapsed in years, e.g. 10\n"
+				"\t\t-e, --earth    time elapsed as perceived by observer on earth      "
+										"=> calculate time elapsed for travelling person\n"
+				"\t\t-t, --trek     time elapsed as perceived by observer in space ship "
+										"=> calculate time elapsed for person on earth\n"
+				"\t\t-d, --distance distance travelled (default observer: earth)        "
+										"=> calculate time elapsed for travelling person\n"
+				"\t\t-h, --help     show this text\n\n\n";
+
 int main(int argc, char **argv) 
 {
-	/*
+	
 	if(argc < 3)
 	{
-		fprintf(stderr, "Usage:\n\t./tdil [ -k | -p | -f ] <velocity> -y <time elapsed> [ -e | -t ]\n"
-				"\t./tdil -d <distance travelled in light years> [ -k | -p | -f ] <velocity>\n");
+		fprintf(stderr, "%s", help_text);
+				
 		return 1;
 	}
-	*/
+	
 	int c;
 	int digit_optind = 0;	
 	
