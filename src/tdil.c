@@ -11,7 +11,8 @@ static const struct option long_options[] =
 	{ "distance", 	required_argument, 0, 'd' },
 	{ "earth", 	no_argument, 0, 'e' },
 	{ "trek", 	no_argument, 0, 't' },
-	{ "help", 	no_argument, 0, 'h' }
+	{ "help", 	no_argument, 0, 'h' },
+	{ 0, 0, 0, 0 }	
 };
 
 int main(int argc, char **argv) 
