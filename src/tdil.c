@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <getopt.h>
 #include "timedil.h"
 
@@ -35,19 +36,18 @@ char *help_text = "Usage:\n\t./tdil [ -k | -p | -f ] <velocity> -y <time elapsed
 int main(int argc, char **argv) 
 {
 	
-	if(argc < 3)
+	if(argc < 2)
 	{
-		fprintf(stderr, "%s", help_text);
-				
-		return 1;
+		fprintf(stderr, "%s", help_text);		
+		exit(EXIT_FAILURE);
 	}
 	
+	double vel=0.0, yrs=0.0, yrs_obs_A=0.0, yrs_obs_B=0.0, dist=0.0;
+	char **endptr;
 	int c;
-	int digit_optind = 0;	
 	
 	while(1) 
 	{
-		int this_option_optind = optind ? optind : 1;
 		int option_index = 0;
 
 		c = getopt_long(argc, argv, "k:p:f:d:y:eth", long_options, &option_index);
@@ -58,19 +58,29 @@ int main(int argc, char **argv)
 		switch(c) 
 		{
 			case 'k':
-				printf("[TEST] option k with argument: %s\n", optarg);
+				printf("[TEST] String: %s\n", optarg);
+				vel = strtod(optarg, endptr);
+				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'p':
-				printf("[TEST] option p with argument: %s\n", optarg);
+				printf("[TEST] String: %s\n", optarg);
+				vel = strtod(optarg, endptr);
+				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'f':
-				printf("[TEST] option f with argument: %s\n", optarg);
+				printf("[TEST] String: %s\n", optarg);
+				vel = strtod(optarg, endptr);
+				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'y':
-				printf("[TEST] option y with argument: %s\n", optarg);	
+				printf("[TEST] String: %s\n", optarg);
+				yrs = strtod(optarg, endptr);
+				printf("[TEST] Double: %f\n", yrs);	
 				break;
 			case 'd':
-				printf("[TEST] option d with argument: %s\n", optarg);
+				printf("[TEST] String: %s\n", optarg);
+				dist = strtod(optarg, endptr);
+				printf("[TEST] Double: %f\n", dist);
 				break;
 			case 'e':
 				printf("[TEST] option e\n");
@@ -79,7 +89,8 @@ int main(int argc, char **argv)
 				printf("[TEST] option t\n");
 				break;
 			case 'h':
-				printf("[TEST] option h\n");
+				printf("%s", help_text);
+				exit(EXIT_SUCCESS);
 				break;
 			case '?':
 				if(optopt == 'k')	printf("-k: missing argument\n");
@@ -94,5 +105,5 @@ int main(int argc, char **argv)
 
 	
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }
