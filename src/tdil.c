@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <errno.h>
 #include "timedil.h"
+
+// TEST CASES: 	./bin/tdil -k 45 -p 456.01 -f 433425.3434 -y 3033 -d 3434 -e -t
+//		./bin/tdil -k 45 -p 56 -f 0.99 -y 3033 -d 3434 -e -t
+
+double process_cmd_args(char opt, const char *arg);
 
 static const struct option long_options[] = 
 {
@@ -43,7 +49,7 @@ int main(int argc, char **argv)
 	}
 	
 	double vel=0.0, yrs=0.0, yrs_obs_A=0.0, yrs_obs_B=0.0, dist=0.0;
-	char **endptr;
+
 	int c;
 	
 	while(1) 
@@ -58,28 +64,23 @@ int main(int argc, char **argv)
 		switch(c) 
 		{
 			case 'k':
-				printf("[TEST] String: %s\n", optarg);
-				vel = strtod(optarg, endptr);
+				vel = process_cmd_args(c, optarg);
 				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'p':
-				printf("[TEST] String: %s\n", optarg);
-				vel = strtod(optarg, endptr);
+				vel = process_cmd_args(c, optarg);
 				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'f':
-				printf("[TEST] String: %s\n", optarg);
-				vel = strtod(optarg, endptr);
+				vel = process_cmd_args(c, optarg);
 				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'y':
-				printf("[TEST] String: %s\n", optarg);
-				yrs = strtod(optarg, endptr);
+				yrs = process_cmd_args(c, optarg);
 				printf("[TEST] Double: %f\n", yrs);	
 				break;
 			case 'd':
-				printf("[TEST] String: %s\n", optarg);
-				dist = strtod(optarg, endptr);
+				dist = process_cmd_args(c, optarg);
 				printf("[TEST] Double: %f\n", dist);
 				break;
 			case 'e':
@@ -103,7 +104,70 @@ int main(int argc, char **argv)
 	}
 	//double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
 
-	
-
 	exit(EXIT_SUCCESS);
 }
+
+double process_cmd_args(char opt, const char *arg) 
+{
+	char **endptr;
+	double input = strtod(arg, endptr);
+
+	if(input == 0) 
+	{
+		if(errno == ERANGE) 
+		{
+			fprintf(stderr, "The value provided was out of range. Exiting.\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if(opt == 'k')	
+	{
+		if(input <= 0 || input >= C)
+		{
+			fprintf(stderr, "The value of \"km/h\" must be between 0.0 and %Lf\n", C);
+			exit(EXIT_FAILURE);
+		}
+
+		/*
+		 *  Tried to assign the return values of pct_to_fac(kmh_to_pct(input)) and
+		 *  pct_to_fac(input) to variable and return variable,
+		 *  but this resulted in a seg fault + core dump and crashed the program (I don't know why).
+		 *  Workaround for 'k' and 'p': Do not use variable and return value immediately!
+		 */
+
+		return pct_to_fac(kmh_to_pct(input));
+		
+	}
+
+	else if(opt == 'p')
+	{
+		if(input >= 100 || input <= 0)
+		{
+			fprintf(stderr, "The value of \"percent\" must be between 0.0 and 100.0\n");
+			exit(EXIT_FAILURE);
+		}
+
+		return pct_to_fac(input);
+	}
+
+	else if(opt == 'f' && (input <= 0 || input >= 1))
+	{
+		fprintf(stderr, "The value of \"factor\" must be between 0.0 and 1.0\n");
+		exit(EXIT_FAILURE);
+	}
+
+	else if(opt == 'y' && input <= 0)
+	{
+		fprintf(stderr, "The value of \"years\" must be greater than 0.0\n");
+		exit(EXIT_FAILURE);
+	}
+
+	else if(opt == 'd' && input <= 0)
+	{
+		fprintf(stderr, "The value of \"distance\" must be greater than 0.0\n");
+		exit(EXIT_FAILURE);
+	}
+
+	return input;
+}	
