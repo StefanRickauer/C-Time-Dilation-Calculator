@@ -12,8 +12,8 @@
 double kmh_to_pct(double );
 double pct_to_fac(double );
 double fac_to_kmh(double );
-double time_dilation_A(double , double );
-double time_dilation_B(double , double );
+double time_dilation_earth(double , double );
+double time_dilation_trek(double , double );
 double travel_duration_A(double, double);
 
 #endif

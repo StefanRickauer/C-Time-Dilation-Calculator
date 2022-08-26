@@ -29,27 +29,27 @@ double fac_to_kmh(double fac)
 }
 
 /*
- * Calculate time dilation (in years) percieved by observer A
+ * Calculate time dilation (in years) percieved by observer on earth 
 */
 
-double time_dilation_A(double fac, double time_obs_B)
+double time_dilation_earth(double fac, double time_obs_trek)
 {
-	double time_obs_A;
-	time_obs_A = time_obs_B / pow(( 1 - pow(fac, 2)), 0.5);
+	double time_obs_earth;
+	time_obs_earth = time_obs_trek / pow(( 1 - pow(fac, 2)), 0.5);
 
-	return time_obs_A;
+	return time_obs_earth;
 }
 
 /* 
- * Calculate time dilation (in years) percieved by observer B (traveling at )
+ * Calculate time dilation (in years) percieved by observer in space ship
 */
 
-double time_dilation_B(double fac, double time_obs_A)
+double time_dilation_trek(double fac, double time_obs_earth)
 {
-	double time_obs_B;
-	time_obs_B = time_obs_A * pow(( 1 - pow(fac, 2)), 0.5);
+	double time_obs_trek;
+	time_obs_trek = time_obs_earth * pow(( 1 - pow(fac, 2)), 0.5);
 
-	return time_obs_B;
+	return time_obs_trek;
 }
 
 /*

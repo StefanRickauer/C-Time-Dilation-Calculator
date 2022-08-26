@@ -4,8 +4,18 @@
 #include <errno.h>
 #include "timedil.h"
 
-// TEST CASES: 	./bin/tdil -k 45 -p 456.01 -f 433425.3434 -y 3033 -d 3434 -e -t
-//		./bin/tdil -k 45 -p 56 -f 0.99 -y 3033 -d 3434 -e -t
+#define true  1
+#define false 0
+
+// TEST CASES (cmd line args): 	./bin/tdil -k 45 -p 456.01 -f 433425.3434 -y 3033 -d 3434 -e -t
+//				./bin/tdil -k 45 -p 56 -f 0.99 -y 3033 -d 3434 -e -t
+
+// TEST CASE (time dilation): all data
+// 	time earth: 32
+// 	time space: 10
+// 	velocity:   0.95
+// 				./bin/tdil -f 0.95 -y 10 -t	(calculates time earth: must be 32)
+// 				./bin/tdil -f 0.95 -y 32 -e	(calculates time space: must be 10)
 
 double process_cmd_args(char opt, const char *arg);
 
@@ -48,8 +58,9 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	
-	double vel=0.0, yrs=0.0, yrs_obs_A=0.0, yrs_obs_B=0.0, dist=0.0;
-
+	double vel=0.0, yrs=0.0, yrs_obs_earth=0.0, yrs_obs_trek=0.0, dist=0.0;
+	int earth=false, trek=false;
+	
 	int c;
 	
 	while(1) 
@@ -85,9 +96,13 @@ int main(int argc, char **argv)
 				break;
 			case 'e':
 				printf("[TEST] option e\n");
+				earth = false;		
+				trek = true;		// Calculate time for travelling person
 				break;
 			case 't':
 				printf("[TEST] option t\n");
+				earth = true;		// Calculate time for person on earth
+				trek = false;	
 				break;
 			case 'h':
 				printf("%s", help_text);
@@ -104,6 +119,20 @@ int main(int argc, char **argv)
 	}
 	//double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
 
+	if(earth) 
+	{
+		yrs_obs_trek = yrs;
+		yrs_obs_earth = time_dilation_earth(vel, yrs_obs_trek);
+		printf("[TEST] earth: %f\tspace ship: %f\n", yrs_obs_earth, yrs_obs_trek);
+	}
+	
+	if(trek)
+	{
+		yrs_obs_earth = yrs;
+		yrs_obs_trek = time_dilation_trek(vel, yrs_obs_earth);
+		printf("[TEST] earth: %f\tspace ship: %f\n", yrs_obs_earth, yrs_obs_trek);
+	}
+	
 	exit(EXIT_SUCCESS);
 }
 
