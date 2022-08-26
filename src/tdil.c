@@ -16,8 +16,13 @@
 // 	velocity:   0.95
 // 				./bin/tdil -f 0.95 -y 10 -t	(calculates time earth: must be 32)
 // 				./bin/tdil -f 0.95 -y 32 -e	(calculates time space: must be 10)
+// 				./bin/tdil --percent 95 --years 10 --trek
+// 				./bin/tdil --kmh 1025290206 --years 10 --trek
+// 				./bin/tdil -d 30.5 -f 0.95
 
 double process_cmd_args(char opt, const char *arg);
+void print_result(double fac, double yrs_earth, 
+		double yrs_trek, double dist, int extended); 
 
 static const struct option long_options[] = 
 {
@@ -34,8 +39,8 @@ static const struct option long_options[] =
 
 char *help_text = "Usage:\n\t./tdil [ -k | -p | -f ] <velocity> -y <time elapsed> [ -e | -t ]\n"
 				"\t./tdil [ --kmh | --percent | --factor ] <velocity> --years <time elapsed> [ --earth | --trek ]\n\n"
-				"\t./tdil [ -d ] <distance travelled in light years> [ -k | -p | -f ] <velocity>\n"
-				"\t./tdil [ --distance ] <distance travelled in light years> [ --kmh | --percent | --factor ] <velocity>\n"
+				"\t./tdil -d <distance travelled in light years> [ -k | -p | -f ] <velocity>\n"
+				"\t./tdil --distance <distance travelled in light years> [ --kmh | --percent | --factor ] <velocity>\n"
 				"\n\n\t\t-k, --kmh      velocity in kilometers per hour, e.g. 100000000\n"
 				"\t\t-p, --percent  velocity in percent of speed of light, e.g. 90\n"
 				"\t\t-f, --factor   velocity as factor to be multiplied with speed of light, "
@@ -76,31 +81,24 @@ int main(int argc, char **argv)
 		{
 			case 'k':
 				vel = process_cmd_args(c, optarg);
-				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'p':
 				vel = process_cmd_args(c, optarg);
-				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'f':
 				vel = process_cmd_args(c, optarg);
-				printf("[TEST] Double: %f\n", vel);
 				break;
 			case 'y':
-				yrs = process_cmd_args(c, optarg);
-				printf("[TEST] Double: %f\n", yrs);	
+				yrs = process_cmd_args(c, optarg);	
 				break;
 			case 'd':
 				dist = process_cmd_args(c, optarg);
-				printf("[TEST] Double: %f\n", dist);
 				break;
 			case 'e':
-				printf("[TEST] option e\n");
 				earth = false;		
 				trek = true;		// Calculate time for travelling person
 				break;
 			case 't':
-				printf("[TEST] option t\n");
 				earth = true;		// Calculate time for person on earth
 				trek = false;	
 				break;
@@ -113,26 +111,39 @@ int main(int argc, char **argv)
 				if(optopt == 'p')	printf("-p: missing argument\n");
 				if(optopt == 'f')	printf("-f: missing argument\n");
 				if(optopt == 'y')	printf("-y: missing argument\n");
-				if(optopt == 'd')	printf("-d: missing argumetn\n");
+				if(optopt == 'd')	printf("-d: missing argument\n");
 				break;
 		}
 	}
-	//double t=32.0, t_zero=10.0, v_in_kmh=1025290206.36, v_in_pct=95.0, v_in_fac=0.95, distance=4;
 
+	// All cmd line args processed
+	
 	if(earth) 
 	{
 		yrs_obs_trek = yrs;
 		yrs_obs_earth = time_dilation_earth(vel, yrs_obs_trek);
-		printf("[TEST] earth: %f\tspace ship: %f\n", yrs_obs_earth, yrs_obs_trek);
+		print_result(vel, yrs_obs_earth, yrs_obs_trek, 0.0, false);
 	}
 	
 	if(trek)
 	{
 		yrs_obs_earth = yrs;
 		yrs_obs_trek = time_dilation_trek(vel, yrs_obs_earth);
-		printf("[TEST] earth: %f\tspace ship: %f\n", yrs_obs_earth, yrs_obs_trek);
+		print_result(vel, yrs_obs_earth, yrs_obs_trek, 0.0, false);
 	}
 	
+	if(dist > 0)
+	{
+		if(vel == 0)
+		{
+			fprintf(stderr, "%s", help_text);
+			exit(EXIT_FAILURE);
+		}
+
+		yrs_obs_earth = travel_duration_earth(dist, vel);
+		yrs_obs_trek = time_dilation_trek(vel, yrs_obs_earth);
+		print_result(vel, yrs_obs_earth, yrs_obs_trek, dist, true);
+	}
 	exit(EXIT_SUCCESS);
 }
 
@@ -158,15 +169,7 @@ double process_cmd_args(char opt, const char *arg)
 			exit(EXIT_FAILURE);
 		}
 
-		/*
-		 *  Tried to assign the return values of pct_to_fac(kmh_to_pct(input)) and
-		 *  pct_to_fac(input) to variable and return variable,
-		 *  but this resulted in a seg fault + core dump and crashed the program (I don't know why).
-		 *  Workaround for 'k' and 'p': Do not use variable and return value immediately!
-		 */
-
-		return pct_to_fac(kmh_to_pct(input));
-		
+		return pct_to_fac(kmh_to_pct(input));		
 	}
 
 	else if(opt == 'p')
@@ -199,4 +202,18 @@ double process_cmd_args(char opt, const char *arg)
 	}
 
 	return input;
-}	
+}
+
+void print_result(double fac, double yrs_earth, double yrs_trek, double dist, int extended)
+{
+	double diff = yrs_earth - yrs_trek;
+
+	printf("\n");
+
+	if(extended)
+		printf("\tDistance in ly:\t\t\t%.2f\n\n", dist);
+
+	printf("\tSpeed in km/h:\t\t%.2f\n\tSpeed in pct of C:\t\t%.2f\n\n"
+	       "\tTime elapsed earth (in yrs):\t%.2f\n\tTime elapsed space (in yrs):\t%.2f\n\n"
+	       "\tTime difference (in yrs):\t%.2f\n\n", fac_to_kmh(fac), fac * 100, yrs_earth, yrs_trek, diff);
+}

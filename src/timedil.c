@@ -53,12 +53,12 @@ double time_dilation_trek(double fac, double time_obs_earth)
 }
 
 /*
- * Calcualte travel duration (as percieved by observer A) 
+ * Calcualte travel duration (as percieved by observer on earth) 
  * based on distance in light years and velocity (factor)
  *
 */
 
-double travel_duration_A(double dist, double fac)
+double travel_duration_earth(double dist, double fac)
 {
 	return dist / fac;
 }
